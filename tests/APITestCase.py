@@ -22,7 +22,9 @@ class APITestCase(unittest.TestCase):
         property1 = {"slot": "prop1", "facet": "sem", "filler": "value1"}
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1])
+        concept = mock_concept(
+            "concept", parents=["parent"], localProperties=[property1]
+        )
         parent = mock_concept("parent", localProperties=[property2])
 
         properties = OntologyAPI()._inherit(concept)
@@ -34,8 +36,12 @@ class APITestCase(unittest.TestCase):
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
         property3 = {"slot": "prop3", "facet": "sem", "filler": "value3"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[property2])
+        concept = mock_concept(
+            "concept", parents=["parent"], localProperties=[property1]
+        )
+        parent = mock_concept(
+            "parent", parents=["grandparent"], localProperties=[property2]
+        )
         grandparent = mock_concept("grandparent", localProperties=[property3])
 
         properties = OntologyAPI()._inherit(concept)
@@ -49,8 +55,14 @@ class APITestCase(unittest.TestCase):
         property3 = {"slot": "prop3", "facet": "sem", "filler": "value3"}
         property4 = {"slot": "prop4", "facet": "sem", "filler": "value4"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1])
-        parent = mock_concept("parent", parents=["grandparent1", "grandparent2"], localProperties=[property2])
+        concept = mock_concept(
+            "concept", parents=["parent"], localProperties=[property1]
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent1", "grandparent2"],
+            localProperties=[property2],
+        )
         grandparent1 = mock_concept("grandparent1", localProperties=[property3])
         grandparent2 = mock_concept("grandparent2", localProperties=[property4])
 
@@ -64,7 +76,12 @@ class APITestCase(unittest.TestCase):
         property1 = {"slot": "prop1", "facet": "sem", "filler": "value1"}
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1], overriddenFillers=[property2])
+        concept = mock_concept(
+            "concept",
+            parents=["parent"],
+            localProperties=[property1],
+            overriddenFillers=[property2],
+        )
         parent = mock_concept("parent", localProperties=[property2])
 
         properties = OntologyAPI()._inherit(concept)
@@ -76,9 +93,18 @@ class APITestCase(unittest.TestCase):
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
         property3 = {"slot": "prop3", "facet": "sem", "filler": "value3"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[property2], overriddenFillers=[property3])
-        grandparent = mock_concept("grandparent", parents=[], localProperties=[property3])
+        concept = mock_concept(
+            "concept", parents=["parent"], localProperties=[property1]
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[property2],
+            overriddenFillers=[property3],
+        )
+        grandparent = mock_concept(
+            "grandparent", parents=[], localProperties=[property3]
+        )
 
         properties = OntologyAPI()._inherit(concept)
         self.assertTrue(property1 in properties)
@@ -89,7 +115,12 @@ class APITestCase(unittest.TestCase):
         property1 = {"slot": "prop1", "facet": "sem", "filler": "value1"}
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1], totallyRemovedProperties=[property2])
+        concept = mock_concept(
+            "concept",
+            parents=["parent"],
+            localProperties=[property1],
+            totallyRemovedProperties=[property2],
+        )
         parent = mock_concept("parent", localProperties=[property2])
 
         properties = OntologyAPI()._inherit(concept)
@@ -101,9 +132,18 @@ class APITestCase(unittest.TestCase):
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
         property3 = {"slot": "prop3", "facet": "sem", "filler": "value3"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[property2], totallyRemovedProperties=[property3])
-        grandparent = mock_concept("grandparent", parents=[], localProperties=[property3])
+        concept = mock_concept(
+            "concept", parents=["parent"], localProperties=[property1]
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[property2],
+            totallyRemovedProperties=[property3],
+        )
+        grandparent = mock_concept(
+            "grandparent", parents=[], localProperties=[property3]
+        )
 
         properties = OntologyAPI()._inherit(concept)
         self.assertTrue(property1 in properties)
@@ -115,9 +155,21 @@ class APITestCase(unittest.TestCase):
         property2 = {"slot": "prop2", "facet": "sem", "filler": "value2"}
         property3 = {"slot": "prop3", "facet": "sem", "filler": "value3"}
 
-        concept = mock_concept("concept", parents=["parent"], localProperties=[property1], totallyRemovedProperties=[property2])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[property2], totallyRemovedProperties=[property3])
-        grandparent = mock_concept("grandparent", parents=[], localProperties=[property3])
+        concept = mock_concept(
+            "concept",
+            parents=["parent"],
+            localProperties=[property1],
+            totallyRemovedProperties=[property2],
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[property2],
+            totallyRemovedProperties=[property3],
+        )
+        grandparent = mock_concept(
+            "grandparent", parents=[], localProperties=[property3]
+        )
 
         properties = OntologyAPI()._inherit(concept, metadata=True)
         self.assertEqual(2, len(properties))
@@ -126,24 +178,25 @@ class APITestCase(unittest.TestCase):
         # Prop2 is found, but marked as blocked in metadata
         # Prop3 is not found at all; being blocked higher up means it doesn't show up at all
 
-        self.assertTrue({
-            "slot": "prop1",
-            "facet": "sem",
-            "filler": "value1",
-            "metadata": {
-                "defined_in": "concept"
+        self.assertTrue(
+            {
+                "slot": "prop1",
+                "facet": "sem",
+                "filler": "value1",
+                "metadata": {"defined_in": "concept"},
             }
-        } in properties)
+            in properties
+        )
 
-        self.assertTrue({
-            "slot": "prop2",
-            "facet": "sem",
-            "filler": "value2",
-            "metadata": {
-                "defined_in": "parent",
-                "blocked": True
+        self.assertTrue(
+            {
+                "slot": "prop2",
+                "facet": "sem",
+                "filler": "value2",
+                "metadata": {"defined_in": "parent", "blocked": True},
             }
-        } in properties)
+            in properties
+        )
 
     def test_format_subclasses(self):
         concept = mock_concept("concept", parents=["parent"])
@@ -152,14 +205,16 @@ class APITestCase(unittest.TestCase):
 
         formatted = OntologyAPI().format(grandparent)
         self.assertTrue("parent" in formatted["grandparent"]["subclasses"]["value"])
-        self.assertTrue("concept" not in formatted["grandparent"]["subclasses"]["value"])
+        self.assertTrue(
+            "concept" not in formatted["grandparent"]["subclasses"]["value"]
+        )
 
     def test_format_metadata(self):
         concept = mock_concept("concept", definition="test definition")
         formatted = OntologyAPI().format(concept, metadata=True)
-        self.assertEqual({
-            "definition": "test definition"
-        }, formatted["concept"]["_metadata"])
+        self.assertEqual(
+            {"definition": "test definition"}, formatted["concept"]["_metadata"]
+        )
 
     def test_prune_list(self):
         property1 = {"slot": "test", "facet": "sem", "filler": "filler1"}
@@ -167,15 +222,46 @@ class APITestCase(unittest.TestCase):
         property3 = {"slot": "test", "facet": "sem", "filler": "filler3"}
         property4 = {"slot": "test", "facet": "sem", "filler": "filler4"}
 
-        self.assertEqual([property1, property2], OntologyAPI()._prune_list([property1, property2, property3], [property3]))
-        self.assertEqual([property1, property2, property3], OntologyAPI()._prune_list([property1, property2, property3], [property4]))
-        self.assertEqual([property1], OntologyAPI()._prune_list([property1, property2, property3], [property2, property3]))
+        self.assertEqual(
+            [property1, property2],
+            OntologyAPI()._prune_list([property1, property2, property3], [property3]),
+        )
+        self.assertEqual(
+            [property1, property2, property3],
+            OntologyAPI()._prune_list([property1, property2, property3], [property4]),
+        )
+        self.assertEqual(
+            [property1],
+            OntologyAPI()._prune_list(
+                [property1, property2, property3], [property2, property3]
+            ),
+        )
 
-        meta_property1 = {"slot": "test", "facet": "sem", "filler": "filler1", "metadata": {}}
-        meta_property2 = {"slot": "test", "facet": "sem", "filler": "filler2", "metadata": {}}
-        meta_property3 = {"slot": "test", "facet": "sem", "filler": "filler3", "metadata": {}}
+        meta_property1 = {
+            "slot": "test",
+            "facet": "sem",
+            "filler": "filler1",
+            "metadata": {},
+        }
+        meta_property2 = {
+            "slot": "test",
+            "facet": "sem",
+            "filler": "filler2",
+            "metadata": {},
+        }
+        meta_property3 = {
+            "slot": "test",
+            "facet": "sem",
+            "filler": "filler3",
+            "metadata": {},
+        }
 
-        self.assertEqual([meta_property2, meta_property3], OntologyAPI()._prune_list([meta_property1, meta_property2, meta_property3], [property1]))
+        self.assertEqual(
+            [meta_property2, meta_property3],
+            OntologyAPI()._prune_list(
+                [meta_property1, meta_property2, meta_property3], [property1]
+            ),
+        )
 
 
 class APIGetTestCase(unittest.TestCase):
@@ -209,92 +295,130 @@ class APIGetTestCase(unittest.TestCase):
         self.assertEqual([OntologyAPI().format(concept, metadata=True)], results)
 
     def test_get_local(self):
-        grandparent = mock_concept("grandparent", localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}])
-        child = mock_concept("child", parents=["parent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}])
+        grandparent = mock_concept(
+            "grandparent",
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}],
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}],
+        )
+        child = mock_concept(
+            "child",
+            parents=["parent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}],
+        )
 
         results = OntologyAPI().get("child", local=True, metadata=True)
         self.assertEqual(1, len(results[0]["child"]["test"]["sem"]))
-        self.assertIn({
-            "filler": "value3",
-            "defined_in": "child",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
+        self.assertIn(
+            {"filler": "value3", "defined_in": "child", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
 
     def test_get_metadata_specifies_original_definition_per_filler(self):
-        grandparent = mock_concept("grandparent", localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}])
-        child = mock_concept("child", parents=["parent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}])
+        grandparent = mock_concept(
+            "grandparent",
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}],
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}],
+        )
+        child = mock_concept(
+            "child",
+            parents=["parent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}],
+        )
 
         results = OntologyAPI().get("child", metadata=True)
         self.assertEqual(3, len(results[0]["child"]["test"]["sem"]))
-        self.assertIn({
-            "filler": "value1",
-            "defined_in": "grandparent",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
-        self.assertIn({
-            "filler": "value2",
-            "defined_in": "parent",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
-        self.assertIn({
-            "filler": "value3",
-            "defined_in": "child",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
+        self.assertIn(
+            {"filler": "value1", "defined_in": "grandparent", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value2", "defined_in": "parent", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value3", "defined_in": "child", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
 
     def test_get_metadata_marks_blocked_fillers(self):
-        grandparent = mock_concept("grandparent", localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}])
-        parent = mock_concept("parent", parents=["grandparent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}], totallyRemovedProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}])
-        child = mock_concept("child", parents=["parent"], localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}])
+        grandparent = mock_concept(
+            "grandparent",
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}],
+        )
+        parent = mock_concept(
+            "parent",
+            parents=["grandparent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}],
+            totallyRemovedProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"}
+            ],
+        )
+        child = mock_concept(
+            "child",
+            parents=["parent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value3"}],
+        )
 
         results = OntologyAPI().get("grandparent", metadata=True)
         self.assertEqual(1, len(results[0]["grandparent"]["test"]["sem"]))
-        self.assertIn({
-            "filler": "value1",
-            "defined_in": "grandparent",
-            "blocked": False
-        }, results[0]["grandparent"]["test"]["sem"])
+        self.assertIn(
+            {"filler": "value1", "defined_in": "grandparent", "blocked": False},
+            results[0]["grandparent"]["test"]["sem"],
+        )
 
         results = OntologyAPI().get("parent", metadata=True)
         self.assertEqual(2, len(results[0]["parent"]["test"]["sem"]))
-        self.assertIn({
-            "filler": "value2",
-            "defined_in": "parent",
-            "blocked": False
-        }, results[0]["parent"]["test"]["sem"])
-        self.assertIn({
-            "filler": "value1",
-            "defined_in": "grandparent",
-            "blocked": True
-        }, results[0]["parent"]["test"]["sem"])
+        self.assertIn(
+            {"filler": "value2", "defined_in": "parent", "blocked": False},
+            results[0]["parent"]["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value1", "defined_in": "grandparent", "blocked": True},
+            results[0]["parent"]["test"]["sem"],
+        )
 
         results = OntologyAPI().get("child", metadata=True)
         self.assertEqual(2, len(results[0]["child"]["test"]["sem"]))
-        self.assertIn({
-            "filler": "value3",
-            "defined_in": "child",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
-        self.assertIn({
-            "filler": "value2",
-            "defined_in": "parent",
-            "blocked": False
-        }, results[0]["child"]["test"]["sem"])
+        self.assertIn(
+            {"filler": "value3", "defined_in": "child", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value2", "defined_in": "parent", "blocked": False},
+            results[0]["child"]["test"]["sem"],
+        )
 
     def test_get_metadata_augments_slots_with_type(self):
         mock_concept("relation")
-        mock_concept("rel1", parents=["relation"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}])
-        mock_concept("rel2", parents=["rel1"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}])
+        mock_concept(
+            "rel1",
+            parents=["relation"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}],
+        )
+        mock_concept(
+            "rel2",
+            parents=["rel1"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}],
+        )
 
-        concept = mock_concept("concept", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-            {"slot": "rel1", "facet": "sem", "filler": "value2"},
-            {"slot": "rel2", "facet": "sem", "filler": "value3"},
-            {"slot": "rel1-of", "facet": "sem", "filler": "value4"},
-            {"slot": "rel2-of", "facet": "sem", "filler": "value4"},
-        ])
+        concept = mock_concept(
+            "concept",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+                {"slot": "rel1", "facet": "sem", "filler": "value2"},
+                {"slot": "rel2", "facet": "sem", "filler": "value3"},
+                {"slot": "rel1-of", "facet": "sem", "filler": "value4"},
+                {"slot": "rel2-of", "facet": "sem", "filler": "value4"},
+            ],
+        )
 
         results = OntologyAPI().get("concept", metadata=True)
         self.assertFalse(results[0]["concept"]["test"]["is_relation"])
@@ -315,7 +439,6 @@ class APIRootsTestCase(unittest.TestCase):
     def tearDown(self):
         client = ont.management.getclient()
         client.drop_database("unittest")
-
 
     def test_roots(self):
         concept = mock_concept("concept", parents=["parent"])
@@ -486,9 +609,18 @@ class APIInversesTestCase(unittest.TestCase):
         client.drop_database("unittest")
 
     def test_inverses(self):
-        mock_concept("rel1", localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}])
-        mock_concept("rel2", localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}])
-        mock_concept("rel3", localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}])
+        mock_concept(
+            "rel1",
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}],
+        )
+        mock_concept(
+            "rel2",
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}],
+        )
+        mock_concept(
+            "rel3",
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}],
+        )
         mock_concept("rel4")
 
         results = OntologyAPI().inverses()
@@ -514,10 +646,25 @@ class APIRelationsTestCase(unittest.TestCase):
 
     def test_relations(self):
         mock_concept("relation")
-        mock_concept("rel1", parents=["relation"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}])
-        mock_concept("rel2", parents=["rel1"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}])
-        mock_concept("rel3", parents=["rel2"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}])
-        mock_concept("rel4", parents=["relation"],)
+        mock_concept(
+            "rel1",
+            parents=["relation"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}],
+        )
+        mock_concept(
+            "rel2",
+            parents=["rel1"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}],
+        )
+        mock_concept(
+            "rel3",
+            parents=["rel2"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}],
+        )
+        mock_concept(
+            "rel4",
+            parents=["relation"],
+        )
 
         results = OntologyAPI().relations()
 
@@ -533,9 +680,21 @@ class APIRelationsTestCase(unittest.TestCase):
 
     def test_relations_include_inverses(self):
         mock_concept("relation")
-        mock_concept("rel1", parents=["relation"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}])
-        mock_concept("rel2", parents=["rel1"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}])
-        mock_concept("rel3", parents=["rel2"], localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}])
+        mock_concept(
+            "rel1",
+            parents=["relation"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel1-of"}],
+        )
+        mock_concept(
+            "rel2",
+            parents=["rel1"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel2-of"}],
+        )
+        mock_concept(
+            "rel3",
+            parents=["rel2"],
+            localProperties=[{"slot": "inverse", "facet": "sem", "filler": "rel3-of"}],
+        )
         mock_concept("rel4", parents=["relation"])
 
         results = OntologyAPI().relations(inverses=True)
@@ -567,17 +726,29 @@ class APIDomainsAndRangesTestCase(unittest.TestCase):
         self.assertEqual({}, OntologyAPI().domains_and_ranges("no-such-property"))
 
     def test_domains_and_ranges(self):
-        mock_concept("d1", localProperties=[{"slot": "prop", "facet": "sem", "filler": "r1"}])
-        mock_concept("d1", localProperties=[{"slot": "prop", "facet": "sem", "filler": "r2"}])
-        mock_concept("d1", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r3"}])
-        mock_concept("d1", localProperties=[{"slot": "none", "facet": "xyz", "filler": "r4"}])
-        mock_concept("d2", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r1"}])
-        mock_concept("d2", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r2"}])
+        mock_concept(
+            "d1", localProperties=[{"slot": "prop", "facet": "sem", "filler": "r1"}]
+        )
+        mock_concept(
+            "d1", localProperties=[{"slot": "prop", "facet": "sem", "filler": "r2"}]
+        )
+        mock_concept(
+            "d1", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r3"}]
+        )
+        mock_concept(
+            "d1", localProperties=[{"slot": "none", "facet": "xyz", "filler": "r4"}]
+        )
+        mock_concept(
+            "d2", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r1"}]
+        )
+        mock_concept(
+            "d2", localProperties=[{"slot": "prop", "facet": "xyz", "filler": "r2"}]
+        )
 
-        self.assertEqual({
-            "d1": ["r1", "r2", "r3"],
-            "d2": ["r1", "r2"]
-        }, OntologyAPI().domains_and_ranges("prop"))
+        self.assertEqual(
+            {"d1": ["r1", "r2", "r3"], "d2": ["r1", "r2"]},
+            OntologyAPI().domains_and_ranges("prop"),
+        )
 
 
 class APISiblingsTestCase(unittest.TestCase):
@@ -637,67 +808,56 @@ class APIReportTestCase(unittest.TestCase):
         concept = mock_concept("concept")
         child1 = mock_concept("child1", parents=["concept"])
         child2 = mock_concept("child2", parents=["concept"])
-        other1 = mock_concept("other1", localProperties=[{
-            "slot": "slot1",
-            "facet": "sem",
-            "filler": "concept"
-        }, {
-            "slot": "slot2",
-            "facet": "sem",
-            "filler": "concept"
-        }])
-        other2 = mock_concept("other2", localProperties=[{
-            "slot": "slot3",
-            "facet": "sem",
-            "filler": "concept"
-        }])
-        other3 = mock_concept("other3", localProperties=[{
-            "slot": "slot4",
-            "facet": "sem",
-            "filler": "other1"
-        }])
+        other1 = mock_concept(
+            "other1",
+            localProperties=[
+                {"slot": "slot1", "facet": "sem", "filler": "concept"},
+                {"slot": "slot2", "facet": "sem", "filler": "concept"},
+            ],
+        )
+        other2 = mock_concept(
+            "other2",
+            localProperties=[{"slot": "slot3", "facet": "sem", "filler": "concept"}],
+        )
+        other3 = mock_concept(
+            "other3",
+            localProperties=[{"slot": "slot4", "facet": "sem", "filler": "other1"}],
+        )
 
         report = OntologyAPI().report("concept", include_usage=True)
 
         self.assertEqual({"child1", "child2"}, set(report["usage"]["subclasses"]))
         self.assertEqual(3, len(report["usage"]["inverses"]))
-        self.assertIn({
-            "concept": "other1",
-            "slot": "slot1",
-            "facet": "sem",
-            "filler": "concept"
-        }, report["usage"]["inverses"])
-        self.assertIn({
-            "concept": "other1",
-            "slot": "slot2",
-            "facet": "sem",
-            "filler": "concept"
-        }, report["usage"]["inverses"])
-        self.assertIn({
-            "concept": "other2",
-            "slot": "slot3",
-            "facet": "sem",
-            "filler": "concept"
-        }, report["usage"]["inverses"])
+        self.assertIn(
+            {"concept": "other1", "slot": "slot1", "facet": "sem", "filler": "concept"},
+            report["usage"]["inverses"],
+        )
+        self.assertIn(
+            {"concept": "other1", "slot": "slot2", "facet": "sem", "filler": "concept"},
+            report["usage"]["inverses"],
+        )
+        self.assertIn(
+            {"concept": "other2", "slot": "slot3", "facet": "sem", "filler": "concept"},
+            report["usage"]["inverses"],
+        )
 
     def test_report_with_inherited_usage(self):
         concept = mock_concept("concept")
         child = mock_concept("child", parents=["concept"])
-        user = mock_concept("user", localProperties=[{
-            "slot": "slot1",
-            "facet": "sem",
-            "filler": "concept"
-        }])
+        user = mock_concept(
+            "user",
+            localProperties=[{"slot": "slot1", "facet": "sem", "filler": "concept"}],
+        )
 
-        report = OntologyAPI().report("child", include_usage=True, usage_with_inheritance=True)
+        report = OntologyAPI().report(
+            "child", include_usage=True, usage_with_inheritance=True
+        )
 
         self.assertEqual(1, len(report["usage"]["inverses"]))
-        self.assertIn({
-            "concept": "user",
-            "slot": "slot1",
-            "facet": "sem",
-            "filler": "concept"
-        }, report["usage"]["inverses"])
+        self.assertIn(
+            {"concept": "user", "slot": "slot1", "facet": "sem", "filler": "concept"},
+            report["usage"]["inverses"],
+        )
 
 
 class APIUpdateDefinitionTestCase(unittest.TestCase):
@@ -716,13 +876,33 @@ class APIUpdateDefinitionTestCase(unittest.TestCase):
         concept1 = mock_concept("concept1", "definition 1")
         concept1 = mock_concept("concept2", "definition 1")
 
-        self.assertEqual("definition 1", OntologyAPI().get("concept1", metadata=True)[0]["concept1"]["_metadata"]["definition"])
-        self.assertEqual("definition 1", OntologyAPI().get("concept2", metadata=True)[0]["concept2"]["_metadata"]["definition"])
+        self.assertEqual(
+            "definition 1",
+            OntologyAPI().get("concept1", metadata=True)[0]["concept1"]["_metadata"][
+                "definition"
+            ],
+        )
+        self.assertEqual(
+            "definition 1",
+            OntologyAPI().get("concept2", metadata=True)[0]["concept2"]["_metadata"][
+                "definition"
+            ],
+        )
 
         OntologyAPI().update_definition("concept1", "definition 2")
 
-        self.assertEqual("definition 2", OntologyAPI().get("concept1", metadata=True)[0]["concept1"]["_metadata"]["definition"])
-        self.assertEqual("definition 1", OntologyAPI().get("concept2", metadata=True)[0]["concept2"]["_metadata"]["definition"])
+        self.assertEqual(
+            "definition 2",
+            OntologyAPI().get("concept1", metadata=True)[0]["concept1"]["_metadata"][
+                "definition"
+            ],
+        )
+        self.assertEqual(
+            "definition 1",
+            OntologyAPI().get("concept2", metadata=True)[0]["concept2"]["_metadata"][
+                "definition"
+            ],
+        )
 
 
 class APIInsertPropertyTestCase(unittest.TestCase):
@@ -738,10 +918,13 @@ class APIInsertPropertyTestCase(unittest.TestCase):
         client.drop_database("unittest")
 
     def test_insert_property(self):
-        concept = mock_concept("concept", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-            {"slot": "test", "facet": "sem", "filler": "value2"},
-        ])
+        concept = mock_concept(
+            "concept",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+                {"slot": "test", "facet": "sem", "filler": "value2"},
+            ],
+        )
 
         OntologyAPI().insert_property("concept", "test", "sem", "value3")
 
@@ -778,19 +961,25 @@ class APIRemovePropertyTestCase(unittest.TestCase):
         client.drop_database("unittest")
 
     def test_remove_property(self):
-        concept1 = mock_concept("concept1", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-            {"slot": "test", "facet": "sem", "filler": "value2"},
-            {"slot": "test", "facet": "value", "filler": "value1"},
-            {"slot": "other", "facet": "sem", "filler": "value1"},
-        ])
+        concept1 = mock_concept(
+            "concept1",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+                {"slot": "test", "facet": "sem", "filler": "value2"},
+                {"slot": "test", "facet": "value", "filler": "value1"},
+                {"slot": "other", "facet": "sem", "filler": "value1"},
+            ],
+        )
 
-        concept2 = mock_concept("concept2", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-            {"slot": "test", "facet": "sem", "filler": "value2"},
-            {"slot": "test", "facet": "value", "filler": "value1"},
-            {"slot": "other", "facet": "sem", "filler": "value1"},
-        ])
+        concept2 = mock_concept(
+            "concept2",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+                {"slot": "test", "facet": "sem", "filler": "value2"},
+                {"slot": "test", "facet": "value", "filler": "value1"},
+                {"slot": "other", "facet": "sem", "filler": "value1"},
+            ],
+        )
 
         OntologyAPI().remove_property("concept1", "test", "sem", "value1")
 
@@ -818,13 +1007,20 @@ class APIBlockPropertyTestCase(unittest.TestCase):
         client.drop_database("unittest")
 
     def test_block_property(self):
-        parent = mock_concept("parent", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-        ])
+        parent = mock_concept(
+            "parent",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+            ],
+        )
 
-        child = mock_concept("child", parents=["parent"], localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value2"},
-        ])
+        child = mock_concept(
+            "child",
+            parents=["parent"],
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value2"},
+            ],
+        )
 
         OntologyAPI().block_property("child", "test", "sem", "value1")
 
@@ -836,16 +1032,14 @@ class APIBlockPropertyTestCase(unittest.TestCase):
 
         result = OntologyAPI().get("child", metadata=True)[0]["child"]
         self.assertEqual(2, len(result["test"]["sem"]))
-        self.assertIn({
-            "filler": "value1",
-            "defined_in": "parent",
-            "blocked": True
-        }, result["test"]["sem"])
-        self.assertIn({
-            "filler": "value2",
-            "defined_in": "child",
-            "blocked": False
-        }, result["test"]["sem"])
+        self.assertIn(
+            {"filler": "value1", "defined_in": "parent", "blocked": True},
+            result["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value2", "defined_in": "child", "blocked": False},
+            result["test"]["sem"],
+        )
 
 
 class APIUnblockPropertyTestCase(unittest.TestCase):
@@ -861,15 +1055,21 @@ class APIUnblockPropertyTestCase(unittest.TestCase):
         client.drop_database("unittest")
 
     def test_unblock_property(self):
-        parent = mock_concept("parent", localProperties=[
-            {"slot": "test", "facet": "sem", "filler": "value1"},
-        ])
+        parent = mock_concept(
+            "parent",
+            localProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"},
+            ],
+        )
 
-        child = mock_concept("child",
-                             parents=["parent"],
-                             localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}],
-                             totallyRemovedProperties=[{"slot": "test", "facet": "sem", "filler": "value1"}]
-                             )
+        child = mock_concept(
+            "child",
+            parents=["parent"],
+            localProperties=[{"slot": "test", "facet": "sem", "filler": "value2"}],
+            totallyRemovedProperties=[
+                {"slot": "test", "facet": "sem", "filler": "value1"}
+            ],
+        )
 
         OntologyAPI().unblock_property("child", "test", "sem", "value1")
 
@@ -881,16 +1081,14 @@ class APIUnblockPropertyTestCase(unittest.TestCase):
 
         result = OntologyAPI().get("child", metadata=True)[0]["child"]
         self.assertEqual(2, len(result["test"]["sem"]))
-        self.assertIn({
-            "filler": "value1",
-            "defined_in": "parent",
-            "blocked": False
-        }, result["test"]["sem"])
-        self.assertIn({
-            "filler": "value2",
-            "defined_in": "child",
-            "blocked": False
-        }, result["test"]["sem"])
+        self.assertIn(
+            {"filler": "value1", "defined_in": "parent", "blocked": False},
+            result["test"]["sem"],
+        )
+        self.assertIn(
+            {"filler": "value2", "defined_in": "child", "blocked": False},
+            result["test"]["sem"],
+        )
 
 
 class APIAddParentTestCase(unittest.TestCase):
@@ -916,7 +1114,10 @@ class APIAddParentTestCase(unittest.TestCase):
         self.assertEqual(["parent1"], OntologyAPI().ancestors("child", immediate=True))
 
         OntologyAPI().add_parent("child", "parent2")
-        self.assertEqual({"parent1", "parent2"}, set(OntologyAPI().ancestors("child", immediate=True)))
+        self.assertEqual(
+            {"parent1", "parent2"},
+            set(OntologyAPI().ancestors("child", immediate=True)),
+        )
 
     def test_cannot_add_self_as_parent(self):
         concept = mock_concept("concept")
@@ -942,7 +1143,10 @@ class APIRemoveParentTestCase(unittest.TestCase):
         parent2 = mock_concept("parent2")
         child = mock_concept("child", parents=["parent1", "parent2"])
 
-        self.assertEqual({"parent1", "parent2"}, set(OntologyAPI().ancestors("child", immediate=True)))
+        self.assertEqual(
+            {"parent1", "parent2"},
+            set(OntologyAPI().ancestors("child", immediate=True)),
+        )
 
         OntologyAPI().remove_parent("child", "parent1")
         self.assertEqual(["parent2"], OntologyAPI().ancestors("child", immediate=True))
@@ -972,7 +1176,9 @@ class APIAddConceptTestCase(unittest.TestCase):
 
         results = OntologyAPI().get("concept", metadata=True)
         self.assertEqual(1, len(results))
-        self.assertEqual("a definition", results[0]["concept"]["_metadata"]["definition"])
+        self.assertEqual(
+            "a definition", results[0]["concept"]["_metadata"]["definition"]
+        )
 
         self.assertEqual(["parent"], OntologyAPI().ancestors("concept"))
 
@@ -1009,14 +1215,20 @@ class APIRemoveConceptTestCase(unittest.TestCase):
         other = mock_concept("other")
         child1 = mock_concept("child1", parents=["concept"])
         child2 = mock_concept("child2", parents=["concept", "other"])
-        other1 = mock_concept("other1", localProperties=[
-            {"slot": "slot1", "facet": "sem", "filler": "concept"},
-            {"slot": "slot2", "facet": "sem", "filler": "concept"},
-            {"slot": "slot3", "facet": "sem", "filler": "other1"},
-        ])
-        other2 = mock_concept("other2", localProperties=[
-            {"slot": "slot1", "facet": "sem", "filler": "other1"},
-        ])
+        other1 = mock_concept(
+            "other1",
+            localProperties=[
+                {"slot": "slot1", "facet": "sem", "filler": "concept"},
+                {"slot": "slot2", "facet": "sem", "filler": "concept"},
+                {"slot": "slot3", "facet": "sem", "filler": "other1"},
+            ],
+        )
+        other2 = mock_concept(
+            "other2",
+            localProperties=[
+                {"slot": "slot1", "facet": "sem", "filler": "other1"},
+            ],
+        )
 
         OntologyAPI().remove_concept("concept", include_usages=True)
 
@@ -1026,8 +1238,12 @@ class APIRemoveConceptTestCase(unittest.TestCase):
 
         self.assertNotIn("slot1", OntologyAPI().get("other1")[0]["other1"])
         self.assertNotIn("slot2", OntologyAPI().get("other1")[0]["other1"])
-        self.assertIn("other1", OntologyAPI().get("other1")[0]["other1"]["slot3"]["sem"])
-        self.assertIn("other1", OntologyAPI().get("other2")[0]["other2"]["slot1"]["sem"])
+        self.assertIn(
+            "other1", OntologyAPI().get("other1")[0]["other1"]["slot3"]["sem"]
+        )
+        self.assertIn(
+            "other1", OntologyAPI().get("other2")[0]["other2"]["slot1"]["sem"]
+        )
 
 
 class APISearchTestCase(unittest.TestCase):
@@ -1048,9 +1264,14 @@ class APISearchTestCase(unittest.TestCase):
         c3 = mock_concept("concept3")
 
         self.assertEqual(["concept1"], OntologyAPI().search(name_like="concept1"))
-        self.assertEqual(["concept1", "concept2", "concept3"], OntologyAPI().search(name_like="concept"))
+        self.assertEqual(
+            ["concept1", "concept2", "concept3"],
+            OntologyAPI().search(name_like="concept"),
+        )
         self.assertEqual(["concept1"], OntologyAPI().search(name_like="ept1"))
-        self.assertEqual(["concept1", "concept2", "concept3"], OntologyAPI().search(name_like="once"))
+        self.assertEqual(
+            ["concept1", "concept2", "concept3"], OntologyAPI().search(name_like="once")
+        )
         self.assertEqual([], OntologyAPI().search(name_like="xyz"))
 
         # No name specified returns an empty list

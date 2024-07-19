@@ -1,7 +1,14 @@
 import ont.management
 
 
-def mock_concept(name, definition=None, parents=None, localProperties=None, overriddenFillers=None, totallyRemovedProperties=None):
+def mock_concept(
+    name,
+    definition=None,
+    parents=None,
+    localProperties=None,
+    overriddenFillers=None,
+    totallyRemovedProperties=None,
+):
     if definition is None:
         definition = ""
 
@@ -25,7 +32,7 @@ def mock_concept(name, definition=None, parents=None, localProperties=None, over
         "parents": parents,
         "localProperties": localProperties,
         "overriddenFillers": overriddenFillers,
-        "totallyRemovedProperties": totallyRemovedProperties
+        "totallyRemovedProperties": totallyRemovedProperties,
     }
 
     collection.insert_one(concept)

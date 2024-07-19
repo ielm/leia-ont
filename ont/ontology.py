@@ -3,16 +3,24 @@ import os
 import sys
 
 
-class Ontology():
+class Ontology:
 
     def __init__(self, host=None, port=None, cookie=None):
         self.host = host
         if self.host is None:
-            self.host = os.environ["ONTOLOGY_HOST"] if "ONTOLOGY_HOST" in os.environ else "localhost"
+            self.host = (
+                os.environ["ONTOLOGY_HOST"]
+                if "ONTOLOGY_HOST" in os.environ
+                else "localhost"
+            )
 
         self.port = port
         if self.port is None:
-            self.port = int(os.environ["ONTOLOGY_PORT"]) if "ONTOLOGY_PORT" in os.environ else 5003
+            self.port = (
+                int(os.environ["ONTOLOGY_PORT"])
+                if "ONTOLOGY_PORT" in os.environ
+                else 5003
+            )
 
         self.cookie = cookie
 
@@ -34,8 +42,9 @@ class Ontology():
 
         def post_python2(ontology, url, data):
             import urllib2
+
             data = json.dumps(data)
-            request = urllib2.Request(url, data, {'Content-Type': 'application/json'})
+            request = urllib2.Request(url, data, {"Content-Type": "application/json"})
             if self.cookie is not None:
                 request.add_header("cookie", self.cookie)
 
@@ -49,8 +58,10 @@ class Ontology():
         def post_python3(ontology, url, data):
             from urllib.request import Request, urlopen
 
-            data = json.dumps(data).encode('utf8')
-            request = Request(url, data=data, headers={'content-type': 'application/json'})
+            data = json.dumps(data).encode("utf8")
+            request = Request(
+                url, data=data, headers={"content-type": "application/json"}
+            )
             if self.cookie is not None:
                 request.add_header("cookie", self.cookie)
 
@@ -79,6 +90,7 @@ class Ontology():
 
         def get_python2(ontology, url):
             import urllib2
+
             request = urllib2.Request(url)
             if self.cookie is not None:
                 request.add_header("cookie", self.cookie)
@@ -89,6 +101,7 @@ class Ontology():
 
         def get_python3(ontology, url):
             import urllib.request
+
             request = urllib.request.Request(url)
             if self.cookie is not None:
                 request.add_header("cookie", self.cookie)
@@ -114,7 +127,9 @@ class Ontology():
         if type(concepts) is not list:
             concepts = [concepts]
 
-        results = self.__rget("/ontology/api/get", params={"concept": concepts, "local": local})
+        results = self.__rget(
+            "/ontology/api/get", params={"concept": concepts, "local": local}
+        )
         return json.loads(results)
 
     def search(self, name_like: str = None):
@@ -126,11 +141,27 @@ class Ontology():
         return json.loads(results)
 
     def ancestors(self, concept, immediate=False, details=False, paths=False):
-        results = self.__rget("/ontology/api/ancestors", params={"concept": concept, "immediate": immediate, "details": details, "paths": paths})
+        results = self.__rget(
+            "/ontology/api/ancestors",
+            params={
+                "concept": concept,
+                "immediate": immediate,
+                "details": details,
+                "paths": paths,
+            },
+        )
         return json.loads(results)
 
     def descendants(self, concept, immediate=False, details=False, paths=False):
-        results = self.__rget("/ontology/api/descendants", params={"concept": concept, "immediate": immediate, "details": details, "paths": paths})
+        results = self.__rget(
+            "/ontology/api/descendants",
+            params={
+                "concept": concept,
+                "immediate": immediate,
+                "details": details,
+                "paths": paths,
+            },
+        )
         return json.loads(results)
 
     def is_parent(self, concept, parent):
@@ -139,7 +170,9 @@ class Ontology():
 
     def exists(self, concept):
         concepts = map(lambda result: result.keys(), self.get(concept))
-        concepts = [item for sublist in concepts for item in sublist]   # Flattens the lists / reduces
+        concepts = [
+            item for sublist in concepts for item in sublist
+        ]  # Flattens the lists / reduces
         return concept in concepts
 
     def get_subtree(self, concept):
@@ -150,7 +183,13 @@ class Ontology():
             if subtree in results:
                 return subtree
 
-        raise Exception("Concept " + concept + " is not in the three standard subtrees.  Ancestry is: " + results + ".")
+        raise Exception(
+            "Concept "
+            + concept
+            + " is not in the three standard subtrees.  Ancestry is: "
+            + results
+            + "."
+        )
 
     def has_property(self, concept, property):
         results = self.get(concept)
@@ -186,23 +225,39 @@ class Ontology():
         return json.loads(results)
 
     def domains_and_ranges(self, property: str):
-        results = self.__rget("/ontology/api/domains_and_ranges", params={"property": property})
+        results = self.__rget(
+            "/ontology/api/domains_and_ranges", params={"property": property}
+        )
         return json.loads(results)
 
     def update_definition(self, concept: str, definition: str):
-        self.__rpost("/ontology/edit/define/" + concept, data={"definition": definition})
+        self.__rpost(
+            "/ontology/edit/define/" + concept, data={"definition": definition}
+        )
 
     def insert_property(self, concept: str, slot: str, facet: str, filler: str):
-        self.__rpost("/ontology/edit/insert/" + concept, data={"slot": slot, "facet": facet, "filler": filler})
+        self.__rpost(
+            "/ontology/edit/insert/" + concept,
+            data={"slot": slot, "facet": facet, "filler": filler},
+        )
 
     def remove_property(self, concept: str, slot: str, facet: str, filler: str):
-        self.__rpost("/ontology/edit/remove/" + concept, data={"slot": slot, "facet": facet, "filler": filler})
+        self.__rpost(
+            "/ontology/edit/remove/" + concept,
+            data={"slot": slot, "facet": facet, "filler": filler},
+        )
 
     def block_property(self, concept: str, slot: str, facet: str, filler: str):
-        self.__rpost("/ontology/edit/block/" + concept, data={"slot": slot, "facet": facet, "filler": filler})
+        self.__rpost(
+            "/ontology/edit/block/" + concept,
+            data={"slot": slot, "facet": facet, "filler": filler},
+        )
 
     def unblock_property(self, concept: str, slot: str, facet: str, filler: str):
-        self.__rpost("/ontology/edit/unblock/" + concept, data={"slot": slot, "facet": facet, "filler": filler})
+        self.__rpost(
+            "/ontology/edit/unblock/" + concept,
+            data={"slot": slot, "facet": facet, "filler": filler},
+        )
 
     def add_parent(self, concept: str, parent: str):
         self.__rpost("/ontology/edit/add_parent/" + concept, data={"parent": parent})
@@ -211,7 +266,13 @@ class Ontology():
         self.__rpost("/ontology/edit/remove_parent/" + concept, data={"parent": parent})
 
     def add_concept(self, concept: str, parent: str, definition: str):
-        self.__rpost("/ontology/edit/add_concept", data={"concept": concept, "parent": parent, "definition": definition})
+        self.__rpost(
+            "/ontology/edit/add_concept",
+            data={"concept": concept, "parent": parent, "definition": definition},
+        )
 
-    def remove_concept(self, concept: str, include_usages: bool=True):
-        self.__rpost("/ontology/edit/remove_concept/" + concept, data={"include_usages": include_usages})
+    def remove_concept(self, concept: str, include_usages: bool = True):
+        self.__rpost(
+            "/ontology/edit/remove_concept/" + concept,
+            data={"include_usages": include_usages},
+        )

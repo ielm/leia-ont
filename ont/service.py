@@ -1,4 +1,13 @@
-from flask import Flask, jsonify, make_response, redirect, request, abort, render_template, session
+from flask import (
+    Flask,
+    jsonify,
+    make_response,
+    redirect,
+    request,
+    abort,
+    render_template,
+    session,
+)
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from itertools import groupby
@@ -15,7 +24,11 @@ socketio = SocketIO(app)
 
 app.secret_key = "leia-ontology-service"
 
-EDITING_ENABLED = os.environ["EDITING_ENABLED"].lower() == "true" if "EDITING_ENABLED" in os.environ else True
+EDITING_ENABLED = (
+    os.environ["EDITING_ENABLED"].lower() == "true"
+    if "EDITING_ENABLED" in os.environ
+    else True
+)
 
 
 def env_payload():
@@ -44,7 +57,8 @@ def api_get():
     local = False
     try:
         local = request.args.get("local").lower() == "true"
-    except: pass
+    except:
+        pass
 
     concepts = request.args.getlist("concept")
     return json.dumps(OntologyAPI().get(concepts, local=local))
@@ -68,11 +82,27 @@ def api_ancestors():
         abort(400)
 
     concept = request.args["concept"]
-    immediate = False if "immediate" not in request.args else request.args["immediate"].lower() == "true"
-    details = False if "details" not in request.args else request.args["details"].lower() == "true"
-    paths = False if "paths" not in request.args else request.args["paths"].lower() == "true"
+    immediate = (
+        False
+        if "immediate" not in request.args
+        else request.args["immediate"].lower() == "true"
+    )
+    details = (
+        False
+        if "details" not in request.args
+        else request.args["details"].lower() == "true"
+    )
+    paths = (
+        False
+        if "paths" not in request.args
+        else request.args["paths"].lower() == "true"
+    )
 
-    return json.dumps(OntologyAPI().ancestors(concept, immediate=immediate, details=details, paths=paths))
+    return json.dumps(
+        OntologyAPI().ancestors(
+            concept, immediate=immediate, details=details, paths=paths
+        )
+    )
 
 
 @app.route("/ontology/api/descendants", methods=["GET"])
@@ -81,11 +111,27 @@ def api_descendants():
         abort(400)
 
     concept = request.args["concept"]
-    immediate = False if "immediate" not in request.args else request.args["immediate"].lower() == "true"
-    details = False if "details" not in request.args else request.args["details"].lower() == "true"
-    paths = False if "paths" not in request.args else request.args["paths"].lower() == "true"
+    immediate = (
+        False
+        if "immediate" not in request.args
+        else request.args["immediate"].lower() == "true"
+    )
+    details = (
+        False
+        if "details" not in request.args
+        else request.args["details"].lower() == "true"
+    )
+    paths = (
+        False
+        if "paths" not in request.args
+        else request.args["paths"].lower() == "true"
+    )
 
-    return json.dumps(OntologyAPI().descendants(concept, immediate=immediate, details=details, paths=paths))
+    return json.dumps(
+        OntologyAPI().descendants(
+            concept, immediate=immediate, details=details, paths=paths
+        )
+    )
 
 
 @app.route("/ontology/api/inverses", methods=["GET"])
@@ -95,7 +141,11 @@ def api_inverses():
 
 @app.route("/ontology/api/relations", methods=["GET"])
 def api_relations():
-    inverses = False if "inverses" not in request.args else request.args["inverses"].lower() == "true"
+    inverses = (
+        False
+        if "inverses" not in request.args
+        else request.args["inverses"].lower() == "true"
+    )
 
     return json.dumps(OntologyAPI().relations(inverses=inverses))
 
@@ -153,12 +203,16 @@ def view_concept(concept):
 
     properties = []
     for slot in results[0][concept]:
-        if slot in ["is-a", "subclasses", "_metadata"]: continue
+        if slot in ["is-a", "subclasses", "_metadata"]:
+            continue
         for facet in results[0][concept][slot]:
-            if facet in ["is_relation"]: continue
+            if facet in ["is_relation"]:
+                continue
             for filler in results[0][concept][slot][facet]:
                 filler["is_relation"] = filler["filler"] in all_concepts
-                filler["from"] = None if concept == filler["defined_in"] else filler["defined_in"]
+                filler["from"] = (
+                    None if concept == filler["defined_in"] else filler["defined_in"]
+                )
                 filler["status"] = "local"
                 if filler["blocked"]:
                     filler["status"] = "blocked"
@@ -167,7 +221,9 @@ def view_concept(concept):
 
                 properties.append(((slot, facet), filler))
     properties = groupby(properties, key=lambda p: p[0])
-    properties = list(map(lambda p: (p[0], list(map(lambda f: f[1], p[1]))), properties))
+    properties = list(
+        map(lambda p: (p[0], list(map(lambda f: f[1], p[1]))), properties)
+    )
 
     def determine_slot_facet_status(fillers):
         unique_filler_statuses = set(map(lambda f: f["status"], fillers))
@@ -177,17 +233,26 @@ def view_concept(concept):
             return "blocked"
         return "inherit"
 
-    properties = list(map(lambda p: {"slot": p[0][0], "facet": p[0][1], "fillers": p[1], "status": determine_slot_facet_status(p[1])}, properties))
+    properties = list(
+        map(
+            lambda p: {
+                "slot": p[0][0],
+                "facet": p[0][1],
+                "fillers": p[1],
+                "status": determine_slot_facet_status(p[1]),
+            },
+            properties,
+        )
+    )
     properties = sorted(properties, key=lambda p: (p["slot"], p["facet"]))
     properties = list(properties)
 
     def convert_domains_and_ranges(d_and_r):
         out = []
         for k, v in d_and_r.items():
-            ranges = list(map(lambda r: {
-                "range": r,
-                "is_concept": r in all_concepts
-            }, v))
+            ranges = list(
+                map(lambda r: {"range": r, "is_concept": r in all_concepts}, v)
+            )
             ranges = sorted(ranges, key=lambda r: r["range"])
 
             to_append = (k, ranges)
@@ -205,7 +270,9 @@ def view_concept(concept):
         "siblings": siblings,
         "properties": properties,
         "recent": session["recent"],
-        "domains_and_ranges": convert_domains_and_ranges(OntologyAPI().domains_and_ranges(concept))
+        "domains_and_ranges": convert_domains_and_ranges(
+            OntologyAPI().domains_and_ranges(concept)
+        ),
     }
 
     if payload["name"] in session["recent"]:
@@ -222,7 +289,9 @@ def view_concept(concept):
 
 @app.route("/ontology/view/hierarchy", methods=["GET"])
 def view_hierarchy():
-    return render_template("hierarchy.html", roots=OntologyAPI().roots(), env=env_payload())
+    return render_template(
+        "hierarchy.html", roots=OntologyAPI().roots(), env=env_payload()
+    )
 
 
 @app.route("/ontology/view/report/<concept>", methods=["GET"])
@@ -240,11 +309,17 @@ def view_report(concept):
     usage_with_inheritance = False
     try:
         usage_with_inheritance = request.args.get("inh").lower() == "true"
-    except: pass
+    except:
+        pass
 
-    report = OntologyAPI().report(concept, include_usage=True, usage_with_inheritance=usage_with_inheritance)
+    report = OntologyAPI().report(
+        concept, include_usage=True, usage_with_inheritance=usage_with_inheritance
+    )
     report["name"] = concept
-    report["usage"]["inverses"] = sorted(report["usage"]["inverses"], key=lambda k: (k["concept"].lower(), k["slot"], k["facet"]))
+    report["usage"]["inverses"] = sorted(
+        report["usage"]["inverses"],
+        key=lambda k: (k["concept"].lower(), k["slot"], k["facet"]),
+    )
 
     if "recent-reports" not in session:
         session["recent-reports"] = list()
@@ -257,7 +332,9 @@ def view_report(concept):
     if "editing" not in session:
         session["editing"] = False
 
-    return render_template("report.html", report=report, env=env_payload(), inh=usage_with_inheritance)
+    return render_template(
+        "report.html", report=report, env=env_payload(), inh=usage_with_inheritance
+    )
 
 
 @app.route("/ontology/view/toggle/editing")
@@ -374,13 +451,24 @@ def edit_add_parent(concept):
     parent = data["parent"].strip()
 
     if concept == parent:
-        abort(make_response(jsonify(message="Cannot assign %s as a parent of itself." % concept.lower()), 400))
+        abort(
+            make_response(
+                jsonify(
+                    message="Cannot assign %s as a parent of itself." % concept.lower()
+                ),
+                400,
+            )
+        )
 
     if len(OntologyAPI().get(concept, local=True)) == 0:
-        abort(make_response(jsonify(message="Unknown concept %s." % concept.lower()), 400))
+        abort(
+            make_response(jsonify(message="Unknown concept %s." % concept.lower()), 400)
+        )
 
     if len(OntologyAPI().get(parent, local=True)) == 0:
-        abort(make_response(jsonify(message="Unknown concept %s." % parent.lower()), 400))
+        abort(
+            make_response(jsonify(message="Unknown concept %s." % parent.lower()), 400)
+        )
 
     OntologyAPI().add_parent(concept, parent)
 
@@ -420,13 +508,26 @@ def edit_add_concept():
     parent = data["parent"].strip()
 
     if concept == parent:
-        abort(make_response(jsonify(message="Cannot assign %s as a parent of itself." % concept.lower()), 400))
+        abort(
+            make_response(
+                jsonify(
+                    message="Cannot assign %s as a parent of itself." % concept.lower()
+                ),
+                400,
+            )
+        )
 
     if len(OntologyAPI().get(concept, local=True)) != 0:
-        abort(make_response(jsonify(message="Concept %s already exists." % concept.lower()), 400))
+        abort(
+            make_response(
+                jsonify(message="Concept %s already exists." % concept.lower()), 400
+            )
+        )
 
     if len(OntologyAPI().get(parent, local=True)) == 0:
-        abort(make_response(jsonify(message="Unknown concept %s." % parent.lower()), 400))
+        abort(
+            make_response(jsonify(message="Unknown concept %s." % parent.lower()), 400)
+        )
 
     OntologyAPI().add_concept(concept, parent, data["definition"])
 
@@ -459,7 +560,15 @@ def manage():
     message = request.args["message"] if "message" in request.args else None
     error = request.args["error"] if "error" in request.args else None
 
-    from ont.management import active, compile_progress, list_collections, list_local_archives, list_remote_archives, ARCHIVE_PATH
+    from ont.management import (
+        active,
+        compile_progress,
+        list_collections,
+        list_local_archives,
+        list_remote_archives,
+        ARCHIVE_PATH,
+    )
+
     payload = {
         "active": active(),
         "installed": list_collections(),
@@ -468,7 +577,7 @@ def manage():
         "local-volume": ARCHIVE_PATH,
         "message": message,
         "error": error,
-        "compiled": compile_progress()
+        "compiled": compile_progress(),
     }
 
     return render_template("manager.html", payload=payload, env=env_payload())
@@ -481,6 +590,7 @@ def manage_activate():
 
     try:
         from ont.management import activate
+
         activate(ontology)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -496,6 +606,7 @@ def manage_copy():
 
     try:
         from ont.management import copy_collection
+
         copy_collection(ontology, name)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -512,6 +623,7 @@ def manage_rename():
 
     try:
         from ont.management import rename_collection
+
         rename_collection(ontology, name)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -529,7 +641,12 @@ def manage_archive():
     filename = name + ".gz"
 
     try:
-        from ont.management import collection_to_file, list_collections, rename_collection, ARCHIVE_PATH
+        from ont.management import (
+            collection_to_file,
+            list_collections,
+            rename_collection,
+            ARCHIVE_PATH,
+        )
 
         if name != ontology and name in list_collections():
             raise Exception("Cannot archive using another name that already exists.")
@@ -562,15 +679,20 @@ def manage_compile():
 
     from threading import Thread
 
-    t = Thread(target=ont.management.compile, args=(ontology,), kwargs={
-        "compile_inherited_values": compile_inherited_values,
-        "compile_domains_and_ranges": compile_domains_and_ranges,
-        "compile_inverses": compile_inverses,
-    })
+    t = Thread(
+        target=ont.management.compile,
+        args=(ontology,),
+        kwargs={
+            "compile_inherited_values": compile_inherited_values,
+            "compile_domains_and_ranges": compile_domains_and_ranges,
+            "compile_inverses": compile_inverses,
+        },
+    )
     t.start()
 
     message = "Compile started on " + ontology + "."
     return redirect("/ontology/manage?message=" + message)
+
 
 @app.route("/ontology/manage/export", methods=["POST"])
 def manage_export():
@@ -580,7 +702,9 @@ def manage_export():
     file = ont.management.export(ontology, format)
 
     from flask import send_file
+
     return send_file(file, as_attachment=True)
+
 
 @app.route("/ontology/manage/delete", methods=["POST"])
 def manage_delete():
@@ -589,6 +713,7 @@ def manage_delete():
 
     try:
         from ont.management import delete_collection
+
         delete_collection(ontology)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -604,6 +729,7 @@ def manage_local_install():
 
     try:
         from ont.management import file_to_collection, ARCHIVE_PATH
+
         path = os.environ[ARCHIVE_PATH] if ARCHIVE_PATH in os.environ else None
 
         if path is None:
@@ -626,6 +752,7 @@ def manage_local_publish():
 
     try:
         from ont.management import publish_archive
+
         publish_archive(ontology)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -641,6 +768,7 @@ def manage_local_delete():
 
     try:
         from ont.management import delete_local_archive
+
         delete_local_archive(ontology)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -656,6 +784,7 @@ def manage_remote_download():
 
     try:
         from ont.management import download_archive
+
         download_archive(ontology)
     except Exception as e:
         return redirect("/ontology/manage?error=" + e.message)
@@ -669,20 +798,21 @@ def manage_new():
     ontology = request.form["ontology"]
 
     from ont.management import make_collection
+
     make_collection(ontology)
 
     message = "Made and activated " + ontology + "."
     return redirect("/ontology/manage?message=" + message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     host = "127.0.0.1"
     port = 5003
 
     import sys
 
     for arg in sys.argv:
-        if '=' in arg:
+        if "=" in arg:
             k = arg.split("=")[0]
             v = arg.split("=")[1]
 

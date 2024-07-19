@@ -4,7 +4,6 @@ setup(
     name="LEIAOntology",
     version="1.3.1",
     packages=find_packages(),
-
     install_requires=[
         "Flask==1.0.2",
         "Flask-Cors==3.0.9",
@@ -12,13 +11,12 @@ setup(
         "pymongo==3.6.1",
         "boto3==1.7.6",
     ],
-
-    author="Jesse English",
-    author_email="drjesseenglish@gmail.com",
+    author="Ivan Leon",
+    author_email="i.leonmaldonado@gmail.com",
     description="LEIA Ontology Service and API",
     keywords="ontology",
     project_urls={
         "Documentation": "https://app.nuclino.com/LEIA/Knowledge/",
         "Source Code": "https://bitbucket.org/leia-rpi/leiaontology/src/master/",
-    }
+    },
 )

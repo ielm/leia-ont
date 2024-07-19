@@ -44,7 +44,9 @@ def can_connect():
 def list_collections():
     client = getclient()
     db = client[DATABASE]
-    return sorted(filter(lambda c: not c.startswith("compiled_"), db.list_collection_names()))
+    return sorted(
+        filter(lambda c: not c.startswith("compiled_"), db.list_collection_names())
+    )
 
 
 def rename_collection(original_name, new_name):
@@ -53,7 +55,9 @@ def rename_collection(original_name, new_name):
     collection = db[original_name]
 
     if new_name in db.list_collection_names():
-        raise Exception("Cannot rename to " + new_name + ", that ontology already exists.")
+        raise Exception(
+            "Cannot rename to " + new_name + ", that ontology already exists."
+        )
 
     collection.rename(new_name)
 
@@ -76,6 +80,7 @@ def make_collection(name):
     activate(name)
 
     from ont.api import OntologyAPI
+
     api = OntologyAPI(collection)
     api.add_concept("all", None, "ontological root")
 
@@ -86,15 +91,13 @@ def copy_collection(original_name, copied_name):
     collection = db[original_name]
 
     if copied_name in db.list_collection_names():
-        raise Exception("Cannot copy to " + copied_name + ", that ontology already exists.")
+        raise Exception(
+            "Cannot copy to " + copied_name + ", that ontology already exists."
+        )
 
-    match = {
-        "$match": {}
-    }
+    match = {"$match": {}}
 
-    out = {
-        "$out": copied_name
-    }
+    out = {"$out": copied_name}
 
     collection.aggregate([match, out])
 
@@ -107,12 +110,12 @@ def publish_archive(name):
 
     path = path + "/" + name + ".gz"
 
-    s3 = boto3.resource('s3')
-    s3.Object("leia-ontology-repository", name + ".gz").put(Body=open(path, 'rb'))
+    s3 = boto3.resource("s3")
+    s3.Object("leia-ontology-repository", name + ".gz").put(Body=open(path, "rb"))
 
 
 def list_remote_archives():
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource("s3")
     bucket = s3.Bucket("leia-ontology-repository")
 
     return map(lambda object: object.key.replace(".gz", ""), bucket.objects.all())
@@ -126,21 +129,41 @@ def download_archive(name):
 
     path = path + "/" + name + ".gz"
 
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource("s3")
     s3.Bucket("leia-ontology-repository").download_file(name + ".gz", path)
 
 
 def collection_to_file(collection, path):
     path = join(path, collection + ".gz")
 
-    cmd = "mongodump --archive=" + path + " --gzip --db " + DATABASE + " --collection " + collection + " --host " + MONGO_HOST + " --port " + str(MONGO_PORT)
-    print (subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+    cmd = (
+        "mongodump --archive="
+        + path
+        + " --gzip --db "
+        + DATABASE
+        + " --collection "
+        + collection
+        + " --host "
+        + MONGO_HOST
+        + " --port "
+        + str(MONGO_PORT)
+    )
+    print(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
 
 
 def file_to_collection(path):
     name = os.path.basename(path).replace(".gz", "")
-    cmd = "mongorestore --gzip --archive=" + path + " --db " + DATABASE + " --host " + MONGO_HOST + " --port " + str(MONGO_PORT)
-    print (subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
+    cmd = (
+        "mongorestore --gzip --archive="
+        + path
+        + " --db "
+        + DATABASE
+        + " --host "
+        + MONGO_HOST
+        + " --port "
+        + str(MONGO_PORT)
+    )
+    print(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True))
 
 
 def list_local_archives():
@@ -151,9 +174,13 @@ def list_local_archives():
 
     from os import listdir
     from os.path import isfile, join
+
     onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 
-    return map(lambda file: file.replace(".gz", ""), filter(lambda file: file.endswith(".gz"), onlyfiles))
+    return map(
+        lambda file: file.replace(".gz", ""),
+        filter(lambda file: file.endswith(".gz"), onlyfiles),
+    )
 
 
 def delete_local_archive(name):
@@ -165,6 +192,7 @@ def delete_local_archive(name):
     path = path + "/" + name + ".gz"
     os.remove(path)
 
+
 def compile_progress():
     results = {}
 
@@ -175,17 +203,29 @@ def compile_progress():
 
         progress = compiled.find_one({"_id": "PROGRESS"})
         if progress is not None:
-            progress["status"]["percent"] = int(100.0 * (float(progress["status"]["count"]) / float(progress["status"]["total"])))
+            progress["status"]["percent"] = int(
+                100.0
+                * (
+                    float(progress["status"]["count"])
+                    / float(progress["status"]["total"])
+                )
+            )
 
         results[c] = {
             "collection": c,
             "compiled_collection": compiled.name,
-            "progress": progress
+            "progress": progress,
         }
 
     return results
 
-def compile(collection: str, compile_inherited_values: bool=False, compile_domains_and_ranges: bool=False, compile_inverses: bool=False):
+
+def compile(
+    collection: str,
+    compile_inherited_values: bool = False,
+    compile_domains_and_ranges: bool = False,
+    compile_inverses: bool = False,
+):
     client = getclient()
     db = client[DATABASE]
     compiled = db["compiled_" + collection]
@@ -201,22 +241,21 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
 
     # Connect to the API
     from ont.api import OntologyAPI
+
     api = OntologyAPI(collection=db[collection])
 
     # List all of the concepts
     concepts = set(api.list())
 
     # Prime the PROGRESS document
-    compiled.insert_one({
-        "_id": "PROGRESS",
-        "status": {
-            "count": 0,
-            "total": len(concepts),
-            "last": None
-        },
-        "started": time.time(),
-        "finished": None
-    })
+    compiled.insert_one(
+        {
+            "_id": "PROGRESS",
+            "status": {"count": 0, "total": len(concepts), "last": None},
+            "started": time.time(),
+            "finished": None,
+        }
+    )
 
     # Calculate the relations and inverses
     relations = api.relations_to_inverses()
@@ -251,7 +290,7 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
             {"$project": {"localProperties": 1, "_id": "$name"}},
             {"$unwind": "$localProperties"},
             {"$match": {"localProperties.slot": property}},
-            {"$project": {"range": "$localProperties.filler"}}
+            {"$project": {"range": "$localProperties.filler"}},
         ]
         results = list(coll.aggregate(pipeline))
 
@@ -267,7 +306,9 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
 
     # Define a helper method for explicitly populating a frame with its inverses (NOT USED AT THIS TIME)
     def populate_inverses(c: str, frame: dict):
-        usages = api.report(c, include_usage=True, usage_with_inheritance=compile_inherited_values)
+        usages = api.report(
+            c, include_usage=True, usage_with_inheritance=compile_inherited_values
+        )
         inv_slots = set()
         for inv in usages["usage"]["inverses"]:
             try:
@@ -309,7 +350,14 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
 
             for facet_name in list(slot.keys()):
                 facet = slot.pop(facet_name)
-                slot[facet_name.upper()] = list(map(lambda filler: filler.upper() if type(filler) == str else filler, facet))
+                slot[facet_name.upper()] = list(
+                    map(
+                        lambda filler: (
+                            filler.upper() if type(filler) == str else filler
+                        ),
+                        facet,
+                    )
+                )
 
         frame["_id"] = c.upper()
         return frame
@@ -341,12 +389,12 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
         count += 1
         compiled.insert_one(frame)
         compiled.update_one(
-            {"_id": "PROGRESS"},
-            {"$set": {"status.count": count, "status.last": c}}
+            {"_id": "PROGRESS"}, {"$set": {"status.count": count, "status.last": c}}
         )
 
     # Compile each inverse property (this list will be empty if compile_inverses is False)
     import copy
+
     for property in properties:
         inverse = copy.deepcopy(property)
         inverse["_id"] = relations[property["_id"].lower()].upper()
@@ -370,14 +418,12 @@ def compile(collection: str, compile_inherited_values: bool=False, compile_domai
         # Add the inverse as an explicit SUBCLASSES value of its parent
         compiled.update_one(
             {"_id": property["IS-A"]["VALUE"][0]},
-            {"$push": {"SUBCLASSES.VALUE": inverse["_id"]}}
+            {"$push": {"SUBCLASSES.VALUE": inverse["_id"]}},
         )
 
     # Mark the task as finished
-    compiled.update_one(
-        {"_id": "PROGRESS"},
-        {"$set": {"finished": time.time()}}
-    )
+    compiled.update_one({"_id": "PROGRESS"}, {"$set": {"finished": time.time()}})
+
 
 def export(collection: str, format: str):
     path = os.environ[EXPORT_PATH] if EXPORT_PATH in os.environ else None
@@ -417,6 +463,7 @@ def export(collection: str, format: str):
 
         # Pickle
         import pickle
+
         filename = path + "/" + "ontology_" + collection + ".p"
         f = open(filename, "wb")
         pickle.dump(ontology, f)
@@ -432,11 +479,17 @@ def export(collection: str, format: str):
         def map_concept(concept: str, slots: dict):
             slots.pop("_id")
             slots = list(slots.items())
-            return "(%s %s)" % (concept, " ".join(list(map(lambda s: map_slot(*s), slots))))
+            return "(%s %s)" % (
+                concept,
+                " ".join(list(map(lambda s: map_slot(*s), slots))),
+            )
 
         def map_slot(slot: str, facets: dict):
             facets = list(facets.items())
-            return "(%s %s)" % (slot, " ".join(list(map(lambda f: map_facet(*f), facets))))
+            return "(%s %s)" % (
+                slot,
+                " ".join(list(map(lambda f: map_facet(*f), facets))),
+            )
 
         def map_facet(facet: str, fillers):
             return "(%s %s)" % (facet, " ".join(fillers))
