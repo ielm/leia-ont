@@ -8,7 +8,7 @@ setup(
         "Flask==1.0.2",
         "Flask-Cors==3.0.9",
         "Flask-SocketIO==3.3.1",
-        "pymongo==3.6.1",
+        "pymongo==4.6.3",
         "boto3==1.7.6",
     ],
     author="Ivan Leon",
