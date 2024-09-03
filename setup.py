@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "Flask==1.0.2",
-        "Flask-Cors==3.0.9",
+        "Flask-Cors==5.0.0",
         "Flask-SocketIO==3.3.1",
         "pymongo==3.6.1",
         "boto3==1.7.6",
